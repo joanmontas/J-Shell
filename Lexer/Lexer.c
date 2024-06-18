@@ -54,6 +54,7 @@ size_t lexer_next_token(Lexer *lex)
 	if (lex == NULL) {
 		fprintf(stderr,
 			"ERROR: Lexer_next_token error. Given NULL instead of Lexer\n");
+		string_destroy(s);
 		return 0u;
 	}
 
@@ -61,13 +62,38 @@ size_t lexer_next_token(Lexer *lex)
 		   TOKEN_LEXER_ERROR_TYPE) == 0) {
 		fprintf(stderr,
 			"ERROR: Lexer_next_token error. Current token contains a lexical error\n");
+		string_destroy(s);
 		return 0u;
 	}
 
 	if (strcmp(lex->current_token.token_type->c_string, TOKEN_EOF_TYPE) ==
 	    0) {
-		// NOTE(Joan) Could set peek_token to EOF too - Joan
+		fprintf(stderr,
+			"ERROR: Lexer_next_token error. Current token is end of file\n");
+		string_destroy(s);
 		return 1u;
+	}
+
+	if (strcmp(lex->peek_token.token_type->c_string, TOKEN_EOF_TYPE) == 0) {
+		fprintf(stderr,
+			"ERROR: Lexer_next_token error. Current token is end of file\n");
+		string_destroy(s);
+		token_reset(&(lex->current_token));
+		token_set_from_char_array(&(lex->current_token), TOKEN_EOF_TYPE,
+					  TOKEN_EOF_TYPE);
+		return 1u;
+	}
+
+	if (strcmp(lex->peek_token.token_type->c_string,
+		   TOKEN_LEXER_ERROR_TYPE) == 0) {
+		fprintf(stderr,
+			"ERROR: Lexer_next_token error. Current token is end of file\n");
+		string_destroy(s);
+		token_reset(&(lex->current_token));
+		token_set_from_char_array(&(lex->current_token),
+					  TOKEN_LEXER_ERROR_TYPE,
+					  TOKEN_LEXER_ERROR_TYPE);
+		return 0u;
 	}
 
 	// peek_token becomes new
@@ -120,7 +146,7 @@ size_t lexer_next_token(Lexer *lex)
 
 	} else {
 		while (1) {
-			if (c == '\0' || c == ' ') {
+			if (c == '\0' || c == ' ' || is_delimeter(c)) {
 				token_set_from_char_array_and_string(
 					&(lex->peek_token), TOKEN_IDENT_TYPE,
 					s);

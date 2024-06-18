@@ -328,6 +328,47 @@ void test_lexer_next_token_QUOTED()
 	lexer_destroy(&l3);
 }
 
+void test_lexer_next_token_QUOTED_ERROR()
+{
+	// empty quote not closed//
+	char *input_str0 = "\"";
+	Lexer l0 = Lexer_init(input_str0);
+
+	lexer_next_token(&l0);
+	CU_ASSERT(token_is_type(&l0.current_token, TOKEN_NONE_TYPE));
+	CU_ASSERT(token_is_type(&l0.peek_token, TOKEN_LEXER_ERROR_TYPE));
+	lexer_next_token(&l0);
+	CU_ASSERT(token_is_type(&l0.current_token, TOKEN_LEXER_ERROR_TYPE));
+	CU_ASSERT(token_is_type(&l0.peek_token, TOKEN_LEXER_ERROR_TYPE));
+	lexer_next_token(&l0);
+	CU_ASSERT(token_is_type(&l0.current_token, TOKEN_LEXER_ERROR_TYPE));
+	CU_ASSERT(token_is_type(&l0.peek_token, TOKEN_LEXER_ERROR_TYPE));
+
+	lexer_destroy(&l0);
+
+	// single characters quoted //
+	char *input_str1 = "V\"";
+	Lexer l1 = Lexer_init(input_str1);
+
+	CU_ASSERT(token_is_type(&l1.current_token, TOKEN_NONE_TYPE));
+	CU_ASSERT(token_is_type(&l1.peek_token, TOKEN_NONE_TYPE));
+
+	lexer_next_token(&l1);
+	CU_ASSERT(token_is_type(&l1.current_token, TOKEN_NONE_TYPE));
+	CU_ASSERT(token_is_type(&l1.peek_token, TOKEN_IDENT_TYPE));
+	CU_ASSERT(strcmp(l1.peek_token.literal->c_string, "V") == 0);
+
+	lexer_next_token(&l1);
+	CU_ASSERT(token_is_type(&l1.current_token, TOKEN_IDENT_TYPE));
+	CU_ASSERT(token_is_type(&l1.peek_token, TOKEN_LEXER_ERROR_TYPE));
+
+	lexer_next_token(&l1);
+	CU_ASSERT(token_is_type(&l1.current_token, TOKEN_LEXER_ERROR_TYPE));
+	CU_ASSERT(token_is_type(&l1.peek_token, TOKEN_LEXER_ERROR_TYPE));
+
+	lexer_destroy(&l1);
+}
+
 void test_lexer_next_token_SYMBOL()
 {
 	// single symbol //
@@ -350,7 +391,6 @@ void test_lexer_next_token_SYMBOL()
 	lexer_next_token(&l0);
 	CU_ASSERT(token_is_type(&l0.current_token, TOKEN_EOF_TYPE));
 	CU_ASSERT(token_is_type(&l0.peek_token, TOKEN_EOF_TYPE));
-
 
 	lexer_destroy(&l0);
 }

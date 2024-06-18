@@ -16,6 +16,7 @@ void test_lexer_eat_white_space();
 // actual lexing
 void test_lexer_next_token_IDENT();
 void test_lexer_next_token_QUOTED();
+void test_lexer_next_token_QUOTED_ERROR();
 void test_lexer_next_token_SYMBOL();
 
 #endif
