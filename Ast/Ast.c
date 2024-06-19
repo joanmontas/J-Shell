@@ -75,10 +75,10 @@ void ast_destroy(Ast *ast)
 		bin = (Binary_Ast *)ast;
 		string_destroy(bin->value);
 	} else if (strcmp(ast->ast_type, AST_IDENT_TYPE)) {
-		id = (Ident_Ast *)malloc(sizeof(Ident_Ast));
+		id = (Ident_Ast *)ast;
 		string_destroy(id->value);
 	} else if (strcmp(ast->ast_type, AST_QUOTED_TYPE)) {
-		qted = (Quoted_Ast *)malloc(sizeof(Quoted_Ast));
+		qted = (Quoted_Ast *)ast;
 		string_destroy(qted->value);
 	} else {
 		return;
