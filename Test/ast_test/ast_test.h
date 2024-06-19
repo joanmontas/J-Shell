@@ -9,5 +9,6 @@
 
 void test_ast_init();
 void test_ast_init_program();
+void test_ast_init_program_and_command();
 
 #endif

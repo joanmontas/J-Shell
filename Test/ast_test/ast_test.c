@@ -3,6 +3,7 @@
 // License under GNU General Public License v3.0
 
 #include "ast_test.h"
+#include <CUnit/CUError.h>
 #include <CUnit/CUnit.h>
 #include <string.h>
 
@@ -51,6 +52,53 @@ void test_ast_init_program()
 
 	ast = list_get_nth(&prog->commands, 3u);
 	CU_ASSERT(strcmp(ast->ast_type, AST_QUOTED_TYPE) == 0);
+
+	ast_destroy((Ast *)prog);
+}
+
+
+void test_ast_init_program_and_command()
+{
+	Ast *ast = NULL;
+
+	Command_Ast *comm =
+		(Command_Ast *)Ast_init_factory(AST_COMMAND_TYPE, "asd");
+	Binary_Ast *bin = (Binary_Ast *)Ast_init_factory(AST_SYMBOL_TYPE, "|");
+	Ident_Ast *id = (Ident_Ast *)Ast_init_factory(AST_IDENT_TYPE, "ls");
+	Quoted_Ast *qted =
+		(Quoted_Ast *)Ast_init_factory(AST_QUOTED_TYPE, "ls");
+
+	Program_Ast *prog =
+		(Program_Ast *)Ast_init_factory(AST_PROGRAM_TYPE, NULL);
+
+	list_append(&prog->commands, comm);
+	list_append(&comm->args, bin);
+	list_append(&comm->args, id);
+	list_append(&prog->commands, qted);
+
+	ast = list_get_nth(&prog->commands, 0u);
+        CU_ASSERT(ast != NULL);
+	CU_ASSERT(strcmp(ast->ast_type, AST_COMMAND_TYPE) == 0);
+
+        ast = list_get_nth(&prog->commands, 0u);
+        CU_ASSERT(ast != NULL);
+	CU_ASSERT(strcmp(ast->ast_type, AST_COMMAND_TYPE) == 0);
+        comm = (Command_Ast*)ast;
+        ast = list_get_nth(&comm->args, 0u);
+        CU_ASSERT(ast != NULL);
+        CU_ASSERT(strcmp(ast->ast_type, AST_SYMBOL_TYPE) == 0);
+        ast = list_get_nth(&comm->args, 1u);
+        CU_ASSERT(ast != NULL);
+	CU_ASSERT(strcmp(ast->ast_type, AST_IDENT_TYPE) == 0);
+
+	ast = list_get_nth(&prog->commands, 1u);
+        CU_ASSERT(ast != NULL);
+	CU_ASSERT(strcmp(ast->ast_type, AST_QUOTED_TYPE) == 0);
+
+
+
+	// ast = list_get_nth(&prog->commands, 3u);
+	// CU_ASSERT(strcmp(ast->ast_type, AST_QUOTED_TYPE) == 0);
 
 	ast_destroy((Ast *)prog);
 }
