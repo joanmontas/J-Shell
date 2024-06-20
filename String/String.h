@@ -12,15 +12,16 @@ typedef struct String {
 	char *c_string;
 } String;
 
+// init and destructor
 String *string_init_default();
 String *string_init_c_string(const char *c_string);
-
 void string_destroy(String *str);
-
-size_t string_compare(String *l_str, String *r_str);
-char string_at(String *str, size_t indx);
-
+// modifying
 char string_pop_back(String *str);
 size_t string_append_char(String *str, char c);
-
+// indexing
+char string_at(String *str, size_t indx);
+size_t string_compare(String *l_str, String *r_str);
+//
+char *string_get_c_string(String *str);
 #endif

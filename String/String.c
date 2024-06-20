@@ -185,3 +185,14 @@ size_t string_append_char(String *str, char c)
 
 	return 1u;
 }
+
+char *string_get_c_string(String *str)
+{
+	if (str == NULL) {
+		fprintf(stderr,
+			"ERROR: string_get_c_string error. Given String is NULL\n");
+		return NULL;
+	}
+
+	return str->c_string;
+}

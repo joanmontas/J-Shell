@@ -13,7 +13,7 @@ const char *TOKEN_NONE_TYPE = "none";
 const char *TOKEN_LEXER_ERROR_TYPE = "lexer_error";
 const char *TOKEN_UNKOWN_ERROR_TYPE = "unkown_type";
 // NOTE(Joan) Add as neeeded - Joan
-const char *TOKEN_DELIMITERS = "<>|&*;";
+const char *TOKEN_DELIMITERS = "<>|&*;\"";
 
 void token_set_from_char_array(Token *t, const char *tkn_type,
 			       const char *tkn_lit)
@@ -144,4 +144,15 @@ int is_delimeter(const char c)
 		}
 	}
 	return 0;
+}
+
+char *token_get_c_string(Token *t)
+{
+	if (t == NULL) {
+		fprintf(stderr,
+			"ERROR: token_get_c_string error. Given NULL instead of Token*\n");
+		return NULL;
+	}
+
+	return string_get_c_string(t->literal);
 }

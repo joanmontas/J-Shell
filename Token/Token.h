@@ -37,5 +37,6 @@ void token_set_from_char_array_and_string(Token *t, const char *tkn_type,
 int token_is_type(Token *t, const char *tkn_type);
 const char *token_get_type(Token *t);
 int is_delimeter(const char c);
+char *token_get_c_string(Token *t);
 
 #endif // TOKEN_H
