@@ -49,5 +49,5 @@ typedef struct Quoted_Ast {
 
 Ast *Ast_init_factory(const char *type, char *val);
 void ast_destroy(Ast *ast);
-
+int ast_is_type(Ast *ast, const char *ast_type);
 #endif // AST_H

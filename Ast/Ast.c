@@ -3,6 +3,7 @@
 // License under GNU General Public License v3.0
 
 #include "Ast.h"
+#include <string.h>
 
 const char *AST_PROGRAM_TYPE = "program";
 const char *AST_COMMAND_TYPE = "command";
@@ -40,6 +41,8 @@ Ast *Ast_init_factory(const char *type, char *val)
 			free(ptr);
 			return NULL;
 		}
+		((Command_Ast *)ptr)->args = List_init();
+
 	} else if (strcmp(type, AST_SYMBOL_TYPE)) {
 		ptr = (Ast *)malloc(sizeof(Binary_Ast));
 		((Binary_Ast *)ptr)->value = string_init_c_string(val);
@@ -110,6 +113,8 @@ void ast_destroy(Ast *ast)
 		list_destroy(&(comm->args));
 	} else if (strcmp(ast->ast_type, AST_SYMBOL_TYPE) == 0) {
 		bin = (Binary_Ast *)ast;
+                ast_destroy(bin->left);
+                ast_destroy(bin->right);
 		string_destroy(bin->value);
 	} else if (strcmp(ast->ast_type, AST_IDENT_TYPE) == 0) {
 		id = (Ident_Ast *)ast;
@@ -123,4 +128,23 @@ void ast_destroy(Ast *ast)
 	}
 
 	free(ast);
+}
+
+int ast_is_type(Ast *ast, const char *ast_type)
+{
+	if (ast == NULL) {
+		fprintf(stderr, "ERROR: ast_is_type. Given NULL ast\n");
+		return -1;
+	}
+
+	if (ast_type == NULL) {
+		fprintf(stderr, "ERROR: ast_is_type. Given NULL type\n");
+		return -1;
+	}
+
+	if (strcmp(ast->ast_type, ast_type) == 0) {
+		return 1;
+	}
+
+	return 0;
 }
