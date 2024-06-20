@@ -75,13 +75,11 @@ size_t lexer_next_token(Lexer *lex)
 	}
 
 	if (strcmp(lex->peek_token.token_type->c_string, TOKEN_EOF_TYPE) == 0) {
-		fprintf(stderr,
-			"ERROR: Lexer_next_token error. Current token is end of file\n");
 		string_destroy(s);
 		token_reset(&(lex->current_token));
 		token_set_from_char_array(&(lex->current_token), TOKEN_EOF_TYPE,
 					  TOKEN_EOF_TYPE);
-		return 1u;
+		return 0u;
 	}
 
 	if (strcmp(lex->peek_token.token_type->c_string,
