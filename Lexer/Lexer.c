@@ -46,6 +46,7 @@ Lexer Lexer_init(char *input_str)
 	return lex;
 }
 
+// TODO(Joan) lex for path start with . or / and ends in white space
 size_t lexer_next_token(Lexer *lex)
 {
 	char c = '\0';
@@ -134,7 +135,17 @@ size_t lexer_next_token(Lexer *lex)
 			lexer_next_character(lex);
 			c = lex->current_char;
 		}
-
+	} else if (c == '.' || c == '/') {
+		while (1) {
+			if (c == '\0' || c == ' ' || is_delimeter(c)) {
+				token_set_from_char_array_and_string(
+					&(lex->peek_token), TOKEN_PATH_TYPE, s);
+				return 1u;
+			}
+			string_append_char(s, c);
+			lexer_next_character(lex);
+			c = lex->current_char;
+		}
 	} else if (is_delimeter(c)) {
 		string_append_char(s, c);
 		token_set_from_char_array_and_string(&(lex->peek_token),

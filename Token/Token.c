@@ -8,6 +8,7 @@
 const char *TOKEN_SYMBOL_TYPE = "symbol";
 const char *TOKEN_IDENT_TYPE = "ident";
 const char *TOKEN_QUOTED_TYPE = "quoted";
+const char *TOKEN_PATH_TYPE = "path";
 const char *TOKEN_EOF_TYPE = "eof";
 const char *TOKEN_NONE_TYPE = "none";
 const char *TOKEN_LEXER_ERROR_TYPE = "lexer_error";
@@ -61,7 +62,6 @@ void token_reset(Token *t)
 	t->literal = NULL;
 }
 
-// TODO(Joan)
 int token_is_type(Token *t, const char *tkn_type)
 {
 	if (t == NULL) {
@@ -114,6 +114,10 @@ const char *token_get_type(Token *t)
 		return TOKEN_SYMBOL_TYPE;
 	} else if (strcmp(t->token_type->c_string, TOKEN_IDENT_TYPE)) {
 		return TOKEN_IDENT_TYPE;
+	} else if (strcmp(t->token_type->c_string, TOKEN_QUOTED_TYPE)) {
+		return TOKEN_QUOTED_TYPE;
+	} else if (strcmp(t->token_type->c_string, TOKEN_PATH_TYPE)) {
+		return TOKEN_PATH_TYPE;
 	} else if (strcmp(t->token_type->c_string, TOKEN_EOF_TYPE)) {
 		return TOKEN_EOF_TYPE;
 	} else if (strcmp(t->token_type->c_string, TOKEN_NONE_TYPE)) {

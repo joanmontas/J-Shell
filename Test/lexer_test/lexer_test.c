@@ -394,3 +394,134 @@ void test_lexer_next_token_SYMBOL()
 
 	lexer_destroy(&l0);
 }
+
+void test_lexer_next_token_PATH()
+{
+	// single path //
+	char *input_str0 = "./my_path;";
+	Lexer l0 = Lexer_init(input_str0);
+
+	CU_ASSERT(token_is_type(&l0.current_token, TOKEN_NONE_TYPE));
+	CU_ASSERT(token_is_type(&l0.peek_token, TOKEN_NONE_TYPE));
+
+	lexer_next_token(&l0);
+	CU_ASSERT(token_is_type(&l0.current_token, TOKEN_NONE_TYPE));
+	CU_ASSERT(token_is_type(&l0.peek_token, TOKEN_PATH_TYPE));
+	CU_ASSERT(strcmp(l0.peek_token.literal->c_string, "./my_path") == 0);
+
+	lexer_next_token(&l0);
+	CU_ASSERT(token_is_type(&l0.current_token, TOKEN_PATH_TYPE));
+	CU_ASSERT(strcmp(l0.current_token.literal->c_string, "./my_path") == 0);
+	CU_ASSERT(token_is_type(&l0.peek_token, TOKEN_SYMBOL_TYPE));
+
+	lexer_next_token(&l0);
+	CU_ASSERT(token_is_type(&l0.current_token, TOKEN_SYMBOL_TYPE));
+	CU_ASSERT(strcmp(l0.current_token.literal->c_string, ";") == 0);
+	CU_ASSERT(token_is_type(&l0.peek_token, TOKEN_EOF_TYPE));
+
+	lexer_destroy(&l0);
+
+	// previous path //
+	char *input_str1 = "..           ;";
+	Lexer l1 = Lexer_init(input_str1);
+
+	CU_ASSERT(token_is_type(&l1.current_token, TOKEN_NONE_TYPE));
+	CU_ASSERT(token_is_type(&l1.peek_token, TOKEN_NONE_TYPE));
+
+	lexer_next_token(&l1);
+	CU_ASSERT(token_is_type(&l1.current_token, TOKEN_NONE_TYPE));
+	CU_ASSERT(token_is_type(&l1.peek_token, TOKEN_PATH_TYPE));
+	CU_ASSERT(strcmp(l1.peek_token.literal->c_string, "..") == 0);
+
+	lexer_next_token(&l1);
+	CU_ASSERT(token_is_type(&l1.current_token, TOKEN_PATH_TYPE));
+	CU_ASSERT(strcmp(l1.current_token.literal->c_string, "..") == 0);
+	CU_ASSERT(token_is_type(&l1.peek_token, TOKEN_SYMBOL_TYPE));
+
+	lexer_destroy(&l1);
+
+	// current path //
+	char *input_str2 = " .           ;";
+	Lexer l2 = Lexer_init(input_str2);
+
+	CU_ASSERT(token_is_type(&l2.current_token, TOKEN_NONE_TYPE));
+	CU_ASSERT(token_is_type(&l2.peek_token, TOKEN_NONE_TYPE));
+
+	lexer_next_token(&l2);
+	CU_ASSERT(token_is_type(&l2.current_token, TOKEN_NONE_TYPE));
+	CU_ASSERT(token_is_type(&l2.peek_token, TOKEN_PATH_TYPE));
+	CU_ASSERT(strcmp(l2.peek_token.literal->c_string, ".") == 0);
+
+	lexer_next_token(&l2);
+	CU_ASSERT(token_is_type(&l2.current_token, TOKEN_PATH_TYPE));
+	CU_ASSERT(token_is_type(&l2.peek_token, TOKEN_SYMBOL_TYPE));
+	CU_ASSERT(strcmp(l2.peek_token.literal->c_string, ";") == 0);
+
+	lexer_destroy(&l2);
+
+	// long path at current //
+	char *input_str3 = "./fjksmdf/sdfgsdfty/gfgjsdf/345_45345;";
+	Lexer l3 = Lexer_init(input_str3);
+
+	CU_ASSERT(token_is_type(&l3.current_token, TOKEN_NONE_TYPE));
+	CU_ASSERT(token_is_type(&l3.peek_token, TOKEN_NONE_TYPE));
+
+	lexer_next_token(&l3);
+	CU_ASSERT(token_is_type(&l3.current_token, TOKEN_NONE_TYPE));
+	CU_ASSERT(token_is_type(&l3.peek_token, TOKEN_PATH_TYPE));
+	CU_ASSERT(strcmp(l3.peek_token.literal->c_string,
+			 "./fjksmdf/sdfgsdfty/gfgjsdf/345_45345") == 0);
+
+	lexer_next_token(&l3);
+	CU_ASSERT(token_is_type(&l3.current_token, TOKEN_PATH_TYPE));
+	CU_ASSERT(token_is_type(&l3.peek_token, TOKEN_SYMBOL_TYPE));
+	CU_ASSERT(strcmp(l3.peek_token.literal->c_string, ";") == 0);
+
+	lexer_destroy(&l3);
+
+	// long path at previous //
+	char *input_str4 =
+		"../akf498KJHdsfj/sdflkjsdf89234/askdj_45kjdfu8234/;";
+	Lexer l4 = Lexer_init(input_str4);
+
+	CU_ASSERT(token_is_type(&l4.current_token, TOKEN_NONE_TYPE));
+	CU_ASSERT(token_is_type(&l4.peek_token, TOKEN_NONE_TYPE));
+
+	lexer_next_token(&l4);
+	CU_ASSERT(token_is_type(&l4.current_token, TOKEN_NONE_TYPE));
+	CU_ASSERT(token_is_type(&l4.peek_token, TOKEN_PATH_TYPE));
+	CU_ASSERT(
+		strcmp(l4.peek_token.literal->c_string,
+		       "../akf498KJHdsfj/sdflkjsdf89234/askdj_45kjdfu8234/") ==
+		0);
+
+	lexer_next_token(&l4);
+	CU_ASSERT(token_is_type(&l4.current_token, TOKEN_PATH_TYPE));
+	CU_ASSERT(token_is_type(&l4.peek_token, TOKEN_SYMBOL_TYPE));
+	CU_ASSERT(strcmp(l4.peek_token.literal->c_string, ";") == 0);
+
+	lexer_destroy(&l4);
+
+	// long path at previous //
+	char *input_str5 =
+		"     /lkjsdf34_234_345345/sdfd/hkhgiu45/458sd_dfhsdfSDfhg/    ;";
+	Lexer l5 = Lexer_init(input_str5);
+
+	CU_ASSERT(token_is_type(&l5.current_token, TOKEN_NONE_TYPE));
+	CU_ASSERT(token_is_type(&l5.peek_token, TOKEN_NONE_TYPE));
+
+	lexer_next_token(&l5);
+	CU_ASSERT(token_is_type(&l5.current_token, TOKEN_NONE_TYPE));
+	CU_ASSERT(token_is_type(&l5.peek_token, TOKEN_PATH_TYPE));
+	CU_ASSERT(
+		strcmp(l5.peek_token.literal->c_string,
+		       "/lkjsdf34_234_345345/sdfd/hkhgiu45/458sd_dfhsdfSDfhg/") ==
+		0);
+
+	lexer_next_token(&l5);
+	CU_ASSERT(token_is_type(&l5.current_token, TOKEN_PATH_TYPE));
+	CU_ASSERT(token_is_type(&l5.peek_token, TOKEN_SYMBOL_TYPE));
+	CU_ASSERT(strcmp(l5.peek_token.literal->c_string, ";") == 0);
+
+	lexer_destroy(&l5);
+}

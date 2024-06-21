@@ -14,6 +14,7 @@ extern const char *AST_COMMAND_TYPE;
 extern const char *AST_SYMBOL_TYPE;
 extern const char *AST_IDENT_TYPE;
 extern const char *AST_QUOTED_TYPE;
+extern const char *AST_PATH_TYPE;
 
 typedef struct Ast {
 	const char *ast_type;
@@ -46,6 +47,12 @@ typedef struct Quoted_Ast {
 	Ast ast;
 	String *value;
 } Quoted_Ast;
+
+typedef struct Path_Ast {
+	Ast ast;
+	String *value;
+	List args;
+} Path_Ast;
 
 Ast *Ast_init_factory(const char *type, char *val);
 void ast_destroy(Ast *ast);

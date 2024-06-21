@@ -15,6 +15,7 @@
 extern const char *TOKEN_SYMBOL_TYPE;
 extern const char *TOKEN_IDENT_TYPE;
 extern const char *TOKEN_QUOTED_TYPE;
+extern const char *TOKEN_PATH_TYPE;
 extern const char *TOKEN_EOF_TYPE;
 extern const char *TOKEN_NONE_TYPE;
 extern const char *TOKEN_LEXER_ERROR_TYPE;

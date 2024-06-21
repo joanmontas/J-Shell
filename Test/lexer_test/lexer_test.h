@@ -18,5 +18,6 @@ void test_lexer_next_token_IDENT();
 void test_lexer_next_token_QUOTED();
 void test_lexer_next_token_QUOTED_ERROR();
 void test_lexer_next_token_SYMBOL();
+void test_lexer_next_token_PATH();
 
 #endif

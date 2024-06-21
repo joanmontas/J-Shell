@@ -10,6 +10,7 @@ const char *AST_COMMAND_TYPE = "command";
 const char *AST_SYMBOL_TYPE = "symbol";
 const char *AST_IDENT_TYPE = "ident";
 const char *AST_QUOTED_TYPE = "quoted";
+const char *AST_PATH_TYPE = "path";
 
 Ast *Ast_init_factory(const char *type, char *val)
 {
@@ -54,6 +55,7 @@ Ast *Ast_init_factory(const char *type, char *val)
 		}
 		((Binary_Ast *)ptr)->left = NULL;
 		((Binary_Ast *)ptr)->right = NULL;
+
 	} else if (strcmp(type, AST_IDENT_TYPE)) {
 		ptr = (Ast *)malloc(sizeof(Ident_Ast));
 		((Ident_Ast *)ptr)->value = string_init_c_string(val);
@@ -63,6 +65,7 @@ Ast *Ast_init_factory(const char *type, char *val)
 			free(ptr);
 			return NULL;
 		}
+
 	} else if (strcmp(type, AST_QUOTED_TYPE)) {
 		ptr = (Ast *)malloc(sizeof(Quoted_Ast));
 		((Quoted_Ast *)ptr)->value = string_init_c_string(val);
@@ -72,6 +75,18 @@ Ast *Ast_init_factory(const char *type, char *val)
 			free(ptr);
 			return NULL;
 		}
+
+	} else if (strcmp(type, AST_PATH_TYPE)) {
+		ptr = (Ast *)malloc(sizeof(Path_Ast));
+		((Path_Ast *)ptr)->value = string_init_c_string(val);
+		if (((Path_Ast *)ptr)->value == NULL) {
+			fprintf(stderr,
+				"ERROR: Ast_init_factory. Could not allocate memory for value\n");
+			free(ptr);
+			return NULL;
+		}
+		((Path_Ast *)ptr)->args = List_init();
+
 	} else {
 		fprintf(stderr, "ERROR: Ast_init_factory. Unkown type\n");
 		return NULL;
@@ -88,6 +103,8 @@ void ast_destroy(Ast *ast)
 	Binary_Ast *bin = NULL;
 	Ident_Ast *id = NULL;
 	Quoted_Ast *qted = NULL;
+	Path_Ast *pth = NULL;
+
 	Ast *tmp = NULL;
 	size_t i = 0u;
 
@@ -113,8 +130,8 @@ void ast_destroy(Ast *ast)
 		list_destroy(&(comm->args));
 	} else if (strcmp(ast->ast_type, AST_SYMBOL_TYPE) == 0) {
 		bin = (Binary_Ast *)ast;
-                ast_destroy(bin->left);
-                ast_destroy(bin->right);
+		ast_destroy(bin->left);
+		ast_destroy(bin->right);
 		string_destroy(bin->value);
 	} else if (strcmp(ast->ast_type, AST_IDENT_TYPE) == 0) {
 		id = (Ident_Ast *)ast;
@@ -122,6 +139,14 @@ void ast_destroy(Ast *ast)
 	} else if (strcmp(ast->ast_type, AST_QUOTED_TYPE) == 0) {
 		qted = (Quoted_Ast *)ast;
 		string_destroy(qted->value);
+	} else if (strcmp(ast->ast_type, AST_PATH_TYPE) == 0) {
+		pth = (Path_Ast *)ast;
+		for (i = 0u; i < pth->args.size; i++) {
+			tmp = (Ast *)list_get_nth(&pth->args, i);
+			ast_destroy(tmp);
+		}
+		string_destroy(pth->value);
+		list_destroy(&(pth->args));
 	} else {
 		fprintf(stderr, "ERROR: ast_destroy. Unkown Ast Type\n");
 		return;
