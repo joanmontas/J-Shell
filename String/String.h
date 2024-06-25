@@ -19,6 +19,7 @@ void string_destroy(String *str);
 // modifying
 char string_pop_back(String *str);
 size_t string_append_char(String *str, char c);
+int string_concat(String *str_left, String *str_right);
 // indexing
 char string_at(String *str, size_t indx);
 size_t string_compare(String *l_str, String *r_str);

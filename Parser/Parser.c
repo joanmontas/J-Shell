@@ -11,6 +11,11 @@ Parser Parser_init(Lexer *l)
 
 	p.err = 0;
 
+	if (l == NULL) {
+		fprintf(stderr, "ERROR: Parse_init. Given lexer in NULL\n");
+		return p;
+	}
+
 	if (l->err) {
 		p.err = 1;
 	}
@@ -109,6 +114,7 @@ Ast *_parse(Parser *p)
 				if (strcmp(token_get_c_string(p->current_token),
 					   ";") == 0) {
 					return (Ast *)comm;
+
 				} else {
 					ast = parse_binary(p, (Ast *)comm);
 					if (ast == NULL) {
@@ -156,6 +162,7 @@ Ast *_parse(Parser *p)
 				if (strcmp(token_get_c_string(p->current_token),
 					   ";") == 0) {
 					return (Ast *)pth;
+
 				} else {
 					ast = parse_binary(p, (Ast *)pth);
 					if (ast == NULL) {
@@ -212,7 +219,7 @@ Ast *parse_token_to_ast_terminal(Token *t)
 		ast = (Ast *)Ast_init_factory(TOKEN_QUOTED_TYPE,
 					      token_get_c_string(t));
 
-        } else if (token_is_type(t, TOKEN_PATH_TYPE)) {
+	} else if (token_is_type(t, TOKEN_PATH_TYPE)) {
 		ast = (Ast *)Ast_init_factory(TOKEN_PATH_TYPE,
 					      token_get_c_string(t));
 

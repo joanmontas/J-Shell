@@ -196,3 +196,27 @@ char *string_get_c_string(String *str)
 
 	return str->c_string;
 }
+
+int string_concat(String *str_left, String *str_right)
+{
+	size_t i = 0u;
+	int rslt = 0;
+
+	if (str_left == NULL || str_right == NULL) {
+		fprintf(stderr,
+			"ERROR: string_concat error. Given String is NULL\n");
+		return -1;
+	}
+
+	for (i = 0u; i < str_right->size; i++) {
+		rslt = string_append_char(str_left, string_at(str_right, i));
+
+		if (rslt == -1) {
+			fprintf(stderr,
+				"Error: string_concat. Error while appending char");
+			return rslt;
+		}
+	}
+
+	return 1;
+}
