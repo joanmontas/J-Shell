@@ -31,7 +31,7 @@ typedef struct Command_Ast {
 	List args;
 } Command_Ast;
 
-typedef struct Binary_Ast {
+typedef struct Symbol_Ast {
 	Ast ast;
 	String *value;
 	Ast *left;
@@ -54,7 +54,15 @@ typedef struct Path_Ast {
 	List args;
 } Path_Ast;
 
+typedef struct _Type_and_Value_Ast {
+	Ast ast;
+	String *value;
+} _Type_and_Value_Ast;
+
 Ast *Ast_init_factory(const char *type, char *val);
 void ast_destroy(Ast *ast);
 int ast_is_type(Ast *ast, const char *ast_type);
+char *ast_get_value(Ast *ast);
+size_t ast_get_value_size(Ast *ast);
+
 #endif // AST_H

@@ -173,3 +173,26 @@ int ast_is_type(Ast *ast, const char *ast_type)
 
 	return 0;
 }
+
+char *ast_get_value(Ast *ast)
+{
+	if (ast == NULL) {
+		fprintf(stderr, "ERROR: ast_get_value. Given ast is NULL\n");
+		return NULL;
+	}
+
+	_Type_and_Value_Ast *tnv = (_Type_and_Value_Ast *)ast;
+
+	return string_get_c_string(tnv->value);
+}
+
+size_t ast_get_value_size(Ast *ast)
+{
+        if (ast == NULL) {
+		fprintf(stderr, "ERROR: ast_get_value_size. Given ast is NULL. Please always check if NULL prior use.\n");
+		return 0u;
+	}
+
+	_Type_and_Value_Ast *tnv = (_Type_and_Value_Ast *)ast;
+        return tnv->value->size;
+}
