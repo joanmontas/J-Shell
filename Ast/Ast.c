@@ -188,11 +188,12 @@ char *ast_get_value(Ast *ast)
 
 size_t ast_get_value_size(Ast *ast)
 {
-        if (ast == NULL) {
-		fprintf(stderr, "ERROR: ast_get_value_size. Given ast is NULL. Please always check if NULL prior use.\n");
+	if (ast == NULL) {
+		fprintf(stderr,
+			"ERROR: ast_get_value_size. Given ast is NULL. Please always check if NULL prior use.\n");
 		return 0u;
 	}
 
 	_Type_and_Value_Ast *tnv = (_Type_and_Value_Ast *)ast;
-        return tnv->value->size;
+	return tnv->value->size;
 }

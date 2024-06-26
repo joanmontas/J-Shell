@@ -8,7 +8,6 @@
 #include <CUnit/Basic.h>
 
 #include "./string_test/string_test.h"
-#include "./hash_table_test/hash_table_test.h"
 #include "./list_test/list_test.h"
 #include "./token_test/token_test.h"
 #include "./lexer_test/lexer_test.h"
@@ -69,14 +68,6 @@ int main()
 		    test_list_get_nth_triple_list);
 	CU_add_test(test_list_suite, "Test linear search equality function",
 		    test_list_linear_search_exist);
-
-	// test hash_table
-	CU_pSuite test_hash_table_suite =
-		CU_add_suite("Hash_table testing", NULL, NULL);
-	CU_add_test(test_hash_table_suite, "Test hash initialization",
-		    test_hash_table_init);
-	CU_add_test(test_hash_table_suite, "Test hash insertion",
-		    test_hash_table_insert);
 
 	// test_token
 	CU_pSuite test_token_suite = CU_add_suite("token testing", NULL, NULL);
@@ -151,13 +142,26 @@ int main()
 	CU_add_test(test_parser_suite,
 		    "Test parser command single quote argument parse",
 		    test_parser_single_quote_as_argument_parse);
-        CU_add_test(test_parser_suite,
+	CU_add_test(test_parser_suite,
 		    "Test parser command single path argument parse",
 		    test_parser_single_path_as_argument_parse);
 	CU_add_test(test_parser_suite, "Test parser single binary",
 		    test_parser_binary_command_parse);
 
+	// test evaluator
+	CU_pSuite test_evaluator_suite =
+		CU_add_suite("Evaluator testing", NULL, NULL);
+	CU_add_test(test_evaluator_suite,
+		    "Test command argument formater for ident",
+		    test_eval_single_argument_Ident_formatter);
+	CU_add_test(test_evaluator_suite,
+		    "Test command argument formatter for ident",
+		    test_eval_single_argument_Path_formatter);
+	CU_add_test(test_evaluator_suite,
+		    "Test evaluation of single command path",
+		    test_eval_evaluating_single_argument_ident);
 	CU_basic_set_mode(CU_BRM_VERBOSE);
+
 	CU_basic_run_tests();
 	CU_cleanup_registry();
 	return CU_get_error();

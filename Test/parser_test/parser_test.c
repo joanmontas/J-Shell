@@ -263,13 +263,14 @@ void test_parser_single_path_as_argument_parse()
 	CU_ASSERT(comm->args.size == 1u);
 	CU_ASSERT(strcmp(string_get_c_string(comm->value), "cat") == 0);
 
-        ast = list_get_nth(&comm->args, 0u);
-        CU_ASSERT(ast != NULL);
+	ast = list_get_nth(&comm->args, 0u);
+	CU_ASSERT(ast != NULL);
 
-        CU_ASSERT(ast_is_type(ast, AST_PATH_TYPE));
-        pth = (Path_Ast *)ast;
+	CU_ASSERT(ast_is_type(ast, AST_PATH_TYPE));
+	pth = (Path_Ast *)ast;
 
-        CU_ASSERT(strcmp(string_get_c_string(pth->value), "../kjfg/gfg345/fgdf454") == 0);
+	CU_ASSERT(strcmp(string_get_c_string(pth->value),
+			 "../kjfg/gfg345/fgdf454") == 0);
 
 	ast_destroy(tree);
 	parser_destroy(&p);
