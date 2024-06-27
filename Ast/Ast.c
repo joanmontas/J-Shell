@@ -45,16 +45,16 @@ Ast *Ast_init_factory(const char *type, char *val)
 		((Command_Ast *)ptr)->args = List_init();
 
 	} else if (strcmp(type, AST_SYMBOL_TYPE)) {
-		ptr = (Ast *)malloc(sizeof(Binary_Ast));
-		((Binary_Ast *)ptr)->value = string_init_c_string(val);
-		if (((Binary_Ast *)ptr)->value == NULL) {
+		ptr = (Ast *)malloc(sizeof(Binary_ast));
+		((Binary_ast *)ptr)->value = string_init_c_string(val);
+		if (((Binary_ast *)ptr)->value == NULL) {
 			fprintf(stderr,
 				"ERROR: Ast_init_factory. Could not allocate memory for value\n");
 			free(ptr);
 			return NULL;
 		}
-		((Binary_Ast *)ptr)->left = NULL;
-		((Binary_Ast *)ptr)->right = NULL;
+		((Binary_ast *)ptr)->left = NULL;
+		((Binary_ast *)ptr)->right = NULL;
 
 	} else if (strcmp(type, AST_IDENT_TYPE)) {
 		ptr = (Ast *)malloc(sizeof(Ident_Ast));
@@ -100,7 +100,7 @@ void ast_destroy(Ast *ast)
 {
 	Program_Ast *prog = NULL;
 	Command_Ast *comm = NULL;
-	Binary_Ast *bin = NULL;
+	Binary_ast *bin = NULL;
 	Ident_Ast *id = NULL;
 	Quoted_Ast *qted = NULL;
 	Path_Ast *pth = NULL;
@@ -129,7 +129,7 @@ void ast_destroy(Ast *ast)
 		string_destroy(comm->value);
 		list_destroy(&(comm->args));
 	} else if (strcmp(ast->ast_type, AST_SYMBOL_TYPE) == 0) {
-		bin = (Binary_Ast *)ast;
+		bin = (Binary_ast *)ast;
 		ast_destroy(bin->left);
 		ast_destroy(bin->right);
 		string_destroy(bin->value);

@@ -31,12 +31,12 @@ typedef struct Command_Ast {
 	List args;
 } Command_Ast;
 
-typedef struct Symbol_Ast {
+typedef struct Binary_ast {
 	Ast ast;
 	String *value;
 	Ast *left;
 	Ast *right;
-} Binary_Ast;
+} Binary_ast;
 
 typedef struct Ident_Ast {
 	Ast ast;

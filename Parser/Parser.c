@@ -234,7 +234,7 @@ Ast *parse_token_to_ast_terminal(Token *t)
 
 Ast *parse_binary(Parser *p, Ast *left)
 {
-	Binary_Ast *bin = NULL;
+	Binary_ast *bin = NULL;
 	Ast *right = NULL;
 
 	if (p == NULL) {
@@ -249,7 +249,7 @@ Ast *parse_binary(Parser *p, Ast *left)
 		return NULL;
 	}
 
-	bin = (Binary_Ast *)Ast_init_factory(
+	bin = (Binary_ast *)Ast_init_factory(
 		AST_SYMBOL_TYPE, token_get_c_string(p->current_token));
 
 	if (bin == NULL) {

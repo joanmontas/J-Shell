@@ -5,6 +5,7 @@
 #ifndef TEST_AST_H
 #define TEST_AST_H
 #include <CUnit/Basic.h>
+#include <string.h>
 #include "../../Ast/Ast.h"
 
 void test_ast_init();

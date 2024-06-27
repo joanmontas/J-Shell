@@ -5,13 +5,12 @@
 #include "ast_test.h"
 #include <CUnit/CUError.h>
 #include <CUnit/CUnit.h>
-#include <string.h>
 
 void test_ast_init()
 {
 	Command_Ast *comm =
 		(Command_Ast *)Ast_init_factory(AST_COMMAND_TYPE, "asd");
-	Binary_Ast *bin = (Binary_Ast *)Ast_init_factory(AST_SYMBOL_TYPE, "|");
+	Binary_ast *bin = (Binary_ast *)Ast_init_factory(AST_SYMBOL_TYPE, "|");
 	Ident_Ast *id = (Ident_Ast *)Ast_init_factory(AST_IDENT_TYPE, "ls");
 	Quoted_Ast *qted =
 		(Quoted_Ast *)Ast_init_factory(AST_QUOTED_TYPE, "ls");
@@ -28,7 +27,7 @@ void test_ast_init_program()
 
 	Command_Ast *comm =
 		(Command_Ast *)Ast_init_factory(AST_COMMAND_TYPE, "asd");
-	Binary_Ast *bin = (Binary_Ast *)Ast_init_factory(AST_SYMBOL_TYPE, "|");
+	Binary_ast *bin = (Binary_ast *)Ast_init_factory(AST_SYMBOL_TYPE, "|");
 	Ident_Ast *id = (Ident_Ast *)Ast_init_factory(AST_IDENT_TYPE, "ls");
 	Quoted_Ast *qted =
 		(Quoted_Ast *)Ast_init_factory(AST_QUOTED_TYPE, "ls");
@@ -62,7 +61,7 @@ void test_ast_init_program_and_command()
 
 	Command_Ast *comm =
 		(Command_Ast *)Ast_init_factory(AST_COMMAND_TYPE, "asd");
-	Binary_Ast *bin = (Binary_Ast *)Ast_init_factory(AST_SYMBOL_TYPE, "|");
+	Binary_ast *bin = (Binary_ast *)Ast_init_factory(AST_SYMBOL_TYPE, "|");
 	Ident_Ast *id = (Ident_Ast *)Ast_init_factory(AST_IDENT_TYPE, "ls");
 	Quoted_Ast *qted =
 		(Quoted_Ast *)Ast_init_factory(AST_QUOTED_TYPE, "ls");

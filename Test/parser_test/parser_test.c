@@ -139,7 +139,7 @@ void test_parser_binary_command_parse()
 
 	Program_Ast *prog = NULL;
 	Command_Ast *comm = NULL;
-	Binary_Ast *bin = NULL;
+	Binary_ast *bin = NULL;
 
 	Lexer l = Lexer_init(str);
 	Parser p = Parser_init(&l);
@@ -157,7 +157,7 @@ void test_parser_binary_command_parse()
 	ast = (Ast *)list_get_nth(&prog->commands, 0u);
 
 	CU_ASSERT(ast_is_type(ast, AST_SYMBOL_TYPE));
-	bin = (Binary_Ast *)ast;
+	bin = (Binary_ast *)ast;
 
 	CU_ASSERT(strcmp(string_get_c_string(bin->value), "|") == 0);
 
