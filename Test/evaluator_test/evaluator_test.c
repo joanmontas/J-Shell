@@ -113,7 +113,7 @@ void test_eval_evaluating_single_argument_path()
 		buffer[bytes_read] = '\0';
 		printf("%s", buffer);
 	}
-	CU_ASSERT(strcmp(buffer, "hi\n") == 0);
+	CU_ASSERT(strcmp(buffer, "Hello, World\n") == 0);
 	close(original_fd[READ_END]);
 
 	ast_destroy(tree);

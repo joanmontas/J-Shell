@@ -13,6 +13,7 @@
 #include "./lexer_test/lexer_test.h"
 #include "./ast_test/ast_test.h"
 #include "./parser_test/parser_test.h"
+#include "./evaluator_test/evaluator_test.h"
 
 int main()
 {
@@ -158,10 +159,13 @@ int main()
 		    "Test command argument formatter for ident",
 		    test_eval_single_argument_Path_formatter);
 	CU_add_test(test_evaluator_suite,
-		    "Test evaluation of single command path",
+		    "Test evaluation of single command ident",
 		    test_eval_evaluating_single_argument_ident);
-	CU_basic_set_mode(CU_BRM_VERBOSE);
+	CU_add_test(test_evaluator_suite,
+		    "Test evaluation of single command path",
+		    test_eval_evaluating_single_argument_path);
 
+	CU_basic_set_mode(CU_BRM_VERBOSE);
 	CU_basic_run_tests();
 	CU_cleanup_registry();
 	return CU_get_error();
