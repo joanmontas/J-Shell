@@ -11,6 +11,7 @@
 
 // eval
 void test_eval_evaluating_single_argument_ident();
+void test_eval_evaluating_single_argument_path();
 // helpers
 void test_eval_single_argument_Ident_formatter();
 void test_eval_single_argument_Path_formatter();
