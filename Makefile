@@ -10,8 +10,8 @@ TEST_FRAMEWORK = -lcunit
 
 all: $(EXECUTABLE_NAME) tests
 
-$(EXECUTABLE_NAME): main.o Token.o String.o List.o Hash_table.o Lexer.o Parser.o Ast.o Evaluator.o
-	$(CC) $(CFLAGS) -o $(EXECUTABLE_NAME) main.o Token.o String.o List.o Hash_table.o Lexer.o Parser.o Ast.o Evaluator.o
+$(EXECUTABLE_NAME): main.o Token.o String.o List.o Lexer.o Parser.o Ast.o Evaluator.o
+	$(CC) $(CFLAGS) -o $(EXECUTABLE_NAME) main.o Token.o String.o List.o Lexer.o Parser.o Ast.o Evaluator.o
 
 main.o: main.c
 	$(CC) $(CFLAGS) -c main.c
@@ -34,14 +34,11 @@ String.o: ./String/String.c ./String/String.h
 List.o: ./List/List.c ./List/List.h
 	$(CC) $(CFLAGS) -c ./List/List.c
 
-Hash_table.o: ./Hash_table/Hash_table.c ./Hash_table/Hash_table.h
-	$(CC) $(CFLAGS) -c ./Hash_table/Hash_table.c
-
 Token.o: ./Token/Token.c ./Token/Token.h
 	$(CC) $(CFLAGS) -c ./Token/Token.c
 
-tests: Tests.o String.o List.o Hash_table.o Lexer.o Parser.o Ast.o Evaluator.o string_test.o hash_table_test.o list_test.o token_test.o lexer_test.o parser_test.o ast_test.o evaluator_test.o
-	$(CC) $(CFLAGS) -o tests Tests.o String.o List.o Hash_table.o Lexer.o Parser.o Token.o Ast.o Evaluator.o string_test.o list_test.o hash_table_test.o token_test.o lexer_test.o parser_test.o ast_test.o evaluator_test.o $(TEST_FRAMEWORK)
+tests: Tests.o String.o List.o Lexer.o Parser.o Ast.o Evaluator.o string_test.o list_test.o token_test.o lexer_test.o parser_test.o ast_test.o evaluator_test.o
+	$(CC) $(CFLAGS) -o tests Tests.o String.o List.o Lexer.o Parser.o Token.o Ast.o Evaluator.o string_test.o list_test.o token_test.o lexer_test.o parser_test.o ast_test.o evaluator_test.o $(TEST_FRAMEWORK)
 
 Tests.o: ./Test/Tests.c
 	$(CC) $(CFLAGS) -c ./Test/Tests.c
@@ -51,9 +48,6 @@ string_test.o: ./Test/string_test/string_test.c ./Test/string_test/string_test.h
 
 list_test.o: ./Test/list_test/list_test.c ./Test/list_test/list_test.h
 	$(CC) $(CFLAGS) -c ./Test/list_test/list_test.c
-
-hash_table_test.o: ./Test/hash_table_test/hash_table_test.c ./Test/hash_table_test/hash_table_test.h
-	$(CC) $(CFLAGS) -c ./Test/hash_table_test/hash_table_test.c
 
 token_test.o: ./Test/token_test/token_test.c ./Test/token_test/token_test.h
 	$(CC) $(CFLAGS) -c ./Test/token_test/token_test.c
