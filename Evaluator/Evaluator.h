@@ -22,9 +22,10 @@ typedef struct Cmd_Args_format {
 } Cmd_Args_format;
 
 // evaluation
-int Evaluate(Program_Ast *p, int original_fd[2]);
-int eval(Ast *ast, int input_fd, int output_fd);
-int exec_command(const char *cmd, char **arg, int input_fd, int output_fd);
+int Evaluate(Program_Ast *p);
+int eval_pipe(Ast *ast, int input_fd, int output_fd);
+int exec_command_single(const char *cmd, char **arg);
+int exec_command_pipe(const char *cmd, char **arg, int input_fd, int output_fd);
 // helper
 Cmd_Args_format *cmd_and_arg_formater(Ast *ast);
 void cmd_args_destroy(Cmd_Args_format *caf);

@@ -7,7 +7,7 @@
 
 const char *EVALUATOR_PATH = "/bin/";
 
-int Evaluate(Program_Ast *p, int original_fd[2])
+int Evaluate(Program_Ast *p)
 {
 	int rslt = 0;
 	Ast *ast = NULL;
@@ -21,19 +21,67 @@ int Evaluate(Program_Ast *p, int original_fd[2])
 	for (i = 0u; i < p->commands.size; i++) {
 		ast = list_get_nth(&p->commands, i);
 
-		rslt = eval(ast, original_fd[READ_END], original_fd[WRITE_END]);
-
-		if (rslt == -1) {
+		if (ast == NULL) {
 			fprintf(stderr,
-				"ERROR: Evaluate. Error while evaluating\n");
-			return rslt;
+				"ERROR: Evaluate. Prog's %zu'th command is NULL\n",
+				i);
+			return -1;
+		}
+
+		if (ast_is_type(ast, AST_COMMAND_TYPE) ||
+		    ast_is_type(ast, AST_PATH_TYPE)) {
+			Cmd_Args_format *caf = cmd_and_arg_formater(ast);
+			if (caf == NULL) {
+				fprintf(stderr,
+					"ERROR: eval. Error while formating commands and argument\n");
+				return -1;
+			}
+			rslt = exec_command_single(caf->cmd, caf->args);
+
+			cmd_args_destroy(caf);
+
+			if (rslt != 1) {
+				return rslt;
+			}
+
+		} else {
+			int original_fd[2];
+			if (pipe(original_fd) == -1) {
+				fprintf(stderr,
+					"Error: while creating original pipe\n");
+				return -1;
+			}
+
+			rslt = eval_pipe(ast, original_fd[READ_END],
+					 original_fd[WRITE_END]);
+
+			if (rslt == -1) {
+				fprintf(stderr,
+					"ERROR: Evaluate. Error while evaluating\n");
+				close(original_fd[WRITE_END]);
+				close(original_fd[READ_END]);
+
+				return rslt;
+			}
+
+			close(original_fd[WRITE_END]);
+
+			char buffer[1024];
+			ssize_t bytes_read = read(original_fd[READ_END], buffer,
+						  sizeof(buffer) - 1);
+			if (bytes_read > 0) {
+				buffer[bytes_read] = '\0';
+				printf("%s", buffer);
+			}
+
+			close(original_fd[READ_END]);
 		}
 	}
 
 	return 0;
 }
 
-int eval(Ast *ast, int input_fd, int output_fd)
+int eval_pipe(Ast *ast, int input_fd, int output_fd)
 {
 	int rslt = 0;
 
@@ -46,11 +94,12 @@ int eval(Ast *ast, int input_fd, int output_fd)
 		Cmd_Args_format *caf = cmd_and_arg_formater(ast);
 		if (caf == NULL) {
 			fprintf(stderr,
-				"ERROR: eval. Error while formating commands and argument");
+				"ERROR: eval. Error while formating commands and argument\n");
 			return -1;
 		}
 
-		rslt = exec_command(caf->cmd, caf->args, input_fd, output_fd);
+		rslt = exec_command_pipe(caf->cmd, caf->args, input_fd,
+					 output_fd);
 
 		cmd_args_destroy(caf);
 
@@ -64,11 +113,12 @@ int eval(Ast *ast, int input_fd, int output_fd)
 		Cmd_Args_format *caf = cmd_and_arg_formater(ast);
 		if (caf == NULL) {
 			fprintf(stderr,
-				"ERROR: eval. Error while formating commands and argument");
+				"ERROR: eval. Error while formating commands and argument\n");
 			return -1;
 		}
 
-		rslt = exec_command(caf->cmd, caf->args, input_fd, output_fd);
+		rslt = exec_command_pipe(caf->cmd, caf->args, input_fd,
+					 output_fd);
 
 		cmd_args_destroy(caf);
 
@@ -78,10 +128,7 @@ int eval(Ast *ast, int input_fd, int output_fd)
 
 		return 1;
 
-	} else if (ast_is_type(ast, AST_BINARY_TYPE)) {
-		printf("TODO(Joan) finish settings this up\n");
-		printf("Piped command\n");
-
+	} else if (ast_is_type(ast, AST_SYMBOL_TYPE)) {
 		Binary_ast *smb = (Binary_ast *)ast;
 		int intermediary_fd[2];
 
@@ -91,11 +138,12 @@ int eval(Ast *ast, int input_fd, int output_fd)
 		if (strcmp(smb->value->c_string, "|") == 0) {
 			if (pipe(intermediary_fd) == -1) {
 				fprintf(stderr,
-					"ERROR: while creating intermediary pipe");
+					"ERROR: while creating intermediary pipe\n");
 				return -1;
 			}
 
-			rslt = eval(l, input_fd, intermediary_fd[WRITE_END]);
+			rslt = eval_pipe(l, input_fd,
+					 intermediary_fd[WRITE_END]);
 			close(intermediary_fd[WRITE_END]);
 
 			if (rslt == -1) {
@@ -103,33 +151,64 @@ int eval(Ast *ast, int input_fd, int output_fd)
 				return -1;
 			}
 
-			rslt = eval(r, intermediary_fd[READ_END], output_fd);
+			rslt = eval_pipe(r, intermediary_fd[READ_END],
+					 output_fd);
 			close(intermediary_fd[READ_END]);
 
 			return rslt;
 
-		} else {
+		} else if(strcmp(smb->value->c_string, ">") == 0) {
+
+                } else {
 			// NOTE(Joan) Add more binary symbol as needed
 			fprintf(stderr,
-				"ERROR: eval was unable to recognized binary symbol");
+				"ERROR: eval was unable to recognized binary symbol\n");
 		}
 
 		return -1;
 
 	} else {
-		fprintf(stderr, "ERROR: eval. Error while executing command");
+		fprintf(stderr, "ERROR: eval. Error while executing command\n");
 		return -1;
 	}
 
 	return -1;
 }
 
-int exec_command(const char *cmd, char **arg, int input_fd, int output_fd)
+int exec_command_single(const char *cmd, char **arg)
 {
 	pid_t pid = fork();
 
 	if (pid < 0) {
-		fprintf(stderr, "ERROR: exec_command error. Unable to fork");
+		fprintf(stderr,
+			"ERROR: exec_command_pipe error. Unable to fork\n");
+		return -1;
+	}
+
+	if (pid == 0) {
+		// Child process
+
+		execve(cmd, arg, NULL);
+		fprintf(stderr,
+			"Error: exec_command_pipe error. Unable to execute execve\n");
+		return -1;
+
+	} else {
+		// Parent process
+
+		waitpid(pid, NULL, 0);
+	}
+
+	return 0;
+}
+
+int exec_command_pipe(const char *cmd, char **arg, int input_fd, int output_fd)
+{
+	pid_t pid = fork();
+
+	if (pid < 0) {
+		fprintf(stderr,
+			"ERROR: exec_command_pipe error. Unable to fork\n");
 		return -1;
 	}
 
@@ -148,7 +227,7 @@ int exec_command(const char *cmd, char **arg, int input_fd, int output_fd)
 
 		execve(cmd, arg, NULL);
 		fprintf(stderr,
-			"Error: exec_command error. Unable to execute execve");
+			"Error: exec_command_pipe error. Unable to execute execve\n");
 		return -1;
 	} else {
 		// Parent process
@@ -166,7 +245,7 @@ Cmd_Args_format *cmd_and_arg_formater(Ast *ast)
 
 	if (ast == NULL) {
 		fprintf(stderr,
-			"ERROR: cmd_and_arg_formater. Given Ast is NULL");
+			"ERROR: cmd_and_arg_formater. Given Ast is NULL\n");
 		return NULL;
 	}
 
@@ -179,7 +258,7 @@ Cmd_Args_format *cmd_and_arg_formater(Ast *ast)
 
 		if (str == NULL) {
 			fprintf(stderr,
-				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format");
+				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format\n");
 			return NULL;
 		}
 
@@ -187,7 +266,7 @@ Cmd_Args_format *cmd_and_arg_formater(Ast *ast)
 
 		if (rslt != 1) {
 			fprintf(stderr,
-				"ERROR: cmd_and_arg_formater. Error while concatenating string");
+				"ERROR: cmd_and_arg_formater. Error while concatenating string\n");
 			string_destroy(str);
 			return NULL;
 		}
@@ -195,7 +274,7 @@ Cmd_Args_format *cmd_and_arg_formater(Ast *ast)
 		caf = (Cmd_Args_format *)malloc(sizeof(Cmd_Args_format));
 		if (caf == NULL) {
 			fprintf(stderr,
-				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format");
+				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format\n");
 			string_destroy(str);
 			return NULL;
 		}
@@ -205,7 +284,7 @@ Cmd_Args_format *cmd_and_arg_formater(Ast *ast)
 		caf->cmd = (char *)malloc((str->size + 1) * sizeof(char));
 		if (caf->cmd == NULL) {
 			fprintf(stderr,
-				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format's cmd");
+				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format's cmd\n");
 			string_destroy(str);
 			free(caf);
 			return NULL;
@@ -216,7 +295,7 @@ Cmd_Args_format *cmd_and_arg_formater(Ast *ast)
 		caf->args = (char **)malloc((caf->size) * sizeof(char *));
 		if (caf->args == NULL) {
 			fprintf(stderr,
-				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format's args");
+				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format's args\n");
 			string_destroy(str);
 			free(caf->cmd);
 			free(caf);
@@ -227,7 +306,7 @@ Cmd_Args_format *cmd_and_arg_formater(Ast *ast)
 		caf->args[0] = (char *)malloc((str->size + 1) * sizeof(char));
 		if (caf->args[0] == NULL) {
 			fprintf(stderr,
-				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format's args [0]");
+				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format's args [0]\n");
 			string_destroy(str);
 			free(caf->cmd);
 			free(caf->args);
@@ -274,7 +353,7 @@ Cmd_Args_format *cmd_and_arg_formater(Ast *ast)
 		caf = (Cmd_Args_format *)malloc(sizeof(Cmd_Args_format));
 		if (caf == NULL) {
 			fprintf(stderr,
-				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format");
+				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format\n");
 			return NULL;
 		}
 		caf->size = pth->args.size + 2;
@@ -283,7 +362,7 @@ Cmd_Args_format *cmd_and_arg_formater(Ast *ast)
 
 		if (caf->cmd == NULL) {
 			fprintf(stderr,
-				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format's cmd");
+				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format's cmd\n");
 			free(caf);
 			return NULL;
 		}
@@ -293,7 +372,7 @@ Cmd_Args_format *cmd_and_arg_formater(Ast *ast)
 		caf->args = (char **)malloc((caf->size) * sizeof(char *));
 		if (caf->args == NULL) {
 			fprintf(stderr,
-				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format's args");
+				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format's args\n");
 			free(caf->cmd);
 			free(caf);
 			return NULL;
@@ -304,7 +383,7 @@ Cmd_Args_format *cmd_and_arg_formater(Ast *ast)
 			(char *)malloc((pth->value->size + 1) * sizeof(char));
 		if (caf->args[0] == NULL) {
 			fprintf(stderr,
-				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format's args [0]");
+				"ERROR: cmd_and_arg_formater. Could not allocate memory for Cmd_Args_format's args [0]\n");
 			free(caf->cmd);
 			free(caf->args);
 			free(caf);
@@ -342,14 +421,14 @@ Cmd_Args_format *cmd_and_arg_formater(Ast *ast)
 		return caf;
 	}
 
-	fprintf(stderr, "ERROR: cmd_and_arg_formater unkown type");
+	fprintf(stderr, "ERROR: cmd_and_arg_formater unkown type\n");
 	return NULL;
 }
 
 void cmd_args_destroy(Cmd_Args_format *caf)
 {
 	if (caf == NULL) {
-		fprintf(stderr, "ERROR: cmd_and_arg_destroy. Given NULL");
+		fprintf(stderr, "ERROR: cmd_and_arg_destroy. Given NULL\n");
 		return;
 	}
 	for (size_t i = 0u; i < caf->size; i++) {
