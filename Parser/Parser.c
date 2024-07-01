@@ -250,7 +250,7 @@ Ast *parse_binary(Parser *p, Ast *left)
 	}
 
 	bin = (Binary_ast *)Ast_init_factory(
-		AST_BINARY_TYPE, token_get_c_string(p->current_token));
+		AST_SYMBOL_TYPE, token_get_c_string(p->current_token));
 
 	if (bin == NULL) {
 		fprintf(stderr,

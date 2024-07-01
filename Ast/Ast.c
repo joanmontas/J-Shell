@@ -7,7 +7,7 @@
 
 const char *AST_PROGRAM_TYPE = "program";
 const char *AST_COMMAND_TYPE = "command";
-const char *AST_BINARY_TYPE = "symbol";
+const char *AST_SYMBOL_TYPE = "symbol";
 const char *AST_IDENT_TYPE = "ident";
 const char *AST_QUOTED_TYPE = "quoted";
 const char *AST_PATH_TYPE = "path";
@@ -44,7 +44,7 @@ Ast *Ast_init_factory(const char *type, char *val)
 		}
 		((Command_Ast *)ptr)->args = List_init();
 
-	} else if (strcmp(type, AST_BINARY_TYPE)) {
+	} else if (strcmp(type, AST_SYMBOL_TYPE)) {
 		ptr = (Ast *)malloc(sizeof(Binary_ast));
 		((Binary_ast *)ptr)->value = string_init_c_string(val);
 		if (((Binary_ast *)ptr)->value == NULL) {
@@ -128,7 +128,7 @@ void ast_destroy(Ast *ast)
 		}
 		string_destroy(comm->value);
 		list_destroy(&(comm->args));
-	} else if (strcmp(ast->ast_type, AST_BINARY_TYPE) == 0) {
+	} else if (strcmp(ast->ast_type, AST_SYMBOL_TYPE) == 0) {
 		bin = (Binary_ast *)ast;
 		ast_destroy(bin->left);
 		ast_destroy(bin->right);

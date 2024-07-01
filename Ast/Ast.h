@@ -11,7 +11,7 @@
 
 extern const char *AST_PROGRAM_TYPE;
 extern const char *AST_COMMAND_TYPE;
-extern const char *AST_BINARY_TYPE;
+extern const char *AST_SYMBOL_TYPE;
 extern const char *AST_IDENT_TYPE;
 extern const char *AST_QUOTED_TYPE;
 extern const char *AST_PATH_TYPE;
