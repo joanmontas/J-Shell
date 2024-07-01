@@ -10,7 +10,7 @@ void test_ast_init()
 {
 	Command_Ast *comm =
 		(Command_Ast *)Ast_init_factory(AST_COMMAND_TYPE, "asd");
-	Binary_ast *bin = (Binary_ast *)Ast_init_factory(AST_BINARY_TYPE, "|");
+	Binary_ast *bin = (Binary_ast *)Ast_init_factory(AST_SYMBOL_TYPE, "|");
 	Ident_Ast *id = (Ident_Ast *)Ast_init_factory(AST_IDENT_TYPE, "ls");
 	Quoted_Ast *qted =
 		(Quoted_Ast *)Ast_init_factory(AST_QUOTED_TYPE, "ls");
@@ -27,7 +27,7 @@ void test_ast_init_program()
 
 	Command_Ast *comm =
 		(Command_Ast *)Ast_init_factory(AST_COMMAND_TYPE, "asd");
-	Binary_ast *bin = (Binary_ast *)Ast_init_factory(AST_BINARY_TYPE, "|");
+	Binary_ast *bin = (Binary_ast *)Ast_init_factory(AST_SYMBOL_TYPE, "|");
 	Ident_Ast *id = (Ident_Ast *)Ast_init_factory(AST_IDENT_TYPE, "ls");
 	Quoted_Ast *qted =
 		(Quoted_Ast *)Ast_init_factory(AST_QUOTED_TYPE, "ls");
@@ -44,7 +44,7 @@ void test_ast_init_program()
 	CU_ASSERT(strcmp(ast->ast_type, AST_COMMAND_TYPE) == 0);
 
 	ast = list_get_nth(&prog->commands, 1u);
-	CU_ASSERT(strcmp(ast->ast_type, AST_BINARY_TYPE) == 0);
+	CU_ASSERT(strcmp(ast->ast_type, AST_SYMBOL_TYPE) == 0);
 
 	ast = list_get_nth(&prog->commands, 2u);
 	CU_ASSERT(strcmp(ast->ast_type, AST_IDENT_TYPE) == 0);
@@ -61,7 +61,7 @@ void test_ast_init_program_and_command()
 
 	Command_Ast *comm =
 		(Command_Ast *)Ast_init_factory(AST_COMMAND_TYPE, "asd");
-	Binary_ast *bin = (Binary_ast *)Ast_init_factory(AST_BINARY_TYPE, "|");
+	Binary_ast *bin = (Binary_ast *)Ast_init_factory(AST_SYMBOL_TYPE, "|");
 	Ident_Ast *id = (Ident_Ast *)Ast_init_factory(AST_IDENT_TYPE, "ls");
 	Quoted_Ast *qted =
 		(Quoted_Ast *)Ast_init_factory(AST_QUOTED_TYPE, "ls");
@@ -86,7 +86,7 @@ void test_ast_init_program_and_command()
 
 	ast = list_get_nth(&comm->args, 0u);
 	CU_ASSERT(ast != NULL);
-	CU_ASSERT(strcmp(ast->ast_type, AST_BINARY_TYPE) == 0);
+	CU_ASSERT(strcmp(ast->ast_type, AST_SYMBOL_TYPE) == 0);
 	ast = list_get_nth(&comm->args, 1u);
 	CU_ASSERT(ast != NULL);
 	CU_ASSERT(strcmp(ast->ast_type, AST_IDENT_TYPE) == 0);

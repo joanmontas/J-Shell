@@ -29,7 +29,7 @@ void test_string_init_c_string()
 	String *str0 = string_init_c_string(str_const0);
 
 	CU_ASSERT(str0->size == 13u);
-	CU_ASSERT(str0->capacity == 13u);
+	CU_ASSERT(str0->capacity == 14u);
 
 	for (i = 0u; i < 13u; i++) {
 		CU_ASSERT_EQUAL(str_const0[i], str0->c_string[i]);
@@ -44,7 +44,7 @@ void test_string_init_c_string()
 	String *str1 = string_init_c_string(str_const1);
 
 	CU_ASSERT(str1->size == 0u);
-	CU_ASSERT(str1->capacity == 0u);
+	CU_ASSERT(str1->capacity == 1u);
 
 	printf("test_string_init_c_string print-1: %s\n", str1->c_string);
 
@@ -56,7 +56,7 @@ void test_string_init_c_string()
 	String *str2 = string_init_c_string(str_const2);
 
 	CU_ASSERT(str2->size == 1u);
-	CU_ASSERT(str2->capacity == 1u);
+	CU_ASSERT(str2->capacity == 2u);
 
 	printf("test_string_init_c_string print-2: %s\n", str2->c_string);
 
@@ -242,7 +242,7 @@ void test_string_append_char()
 	r = string_append_char(str1, 'g');
 	CU_ASSERT(r == 1u);
 	CU_ASSERT(str1->size == 7u);
-	CU_ASSERT(str1->capacity == 12u);
+	CU_ASSERT(str1->capacity == 14u);
 
 	string_destroy(str1);
 }

@@ -156,7 +156,7 @@ void test_parser_binary_command_parse()
 
 	ast = (Ast *)list_get_nth(&prog->commands, 0u);
 
-	CU_ASSERT(ast_is_type(ast, AST_BINARY_TYPE));
+	CU_ASSERT(ast_is_type(ast, AST_SYMBOL_TYPE));
 	bin = (Binary_ast *)ast;
 
 	CU_ASSERT(strcmp(string_get_c_string(bin->value), "|") == 0);

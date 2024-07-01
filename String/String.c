@@ -50,17 +50,14 @@ String *string_init_c_string(const char *c_string)
 	}
 
 	str->size = 0u;
-	str->capacity = 0u;
+	str->capacity = 1u;
 
 	for (i = 0u; c_string[i] != '\0'; i++) {
-		str->capacity = i + 1u;
-		str->size = i;
-	}
-	if (str->capacity != 0u) {
-		str->size = str->size + 1u;
+		str->capacity = str->capacity + 1;
+		str->size = str->size + 1;
 	}
 
-	str->c_string = (char *)malloc(sizeof(char) * (str->capacity + 1));
+	str->c_string = (char *)malloc(sizeof(char) * (str->capacity));
 	if (str->c_string == NULL) {
 		free(str);
 		str = NULL;
@@ -68,7 +65,7 @@ String *string_init_c_string(const char *c_string)
 			"ERROR: string_init_c_string error. Unable to malloc c_string\n");
 		return NULL;
 	}
-	memset(str->c_string, '\0', sizeof(char) * (str->capacity + 1));
+	memset(str->c_string, '\0', sizeof(char) * (str->capacity));
 
 	for (i = 0u; i < str->capacity; i++) {
 		str->c_string[i] = c_string[i];
@@ -158,12 +155,13 @@ size_t string_append_char(String *str, char c)
 		return 0u;
 	}
 
+	str->size++;
 	if (str->size < str->capacity) {
-		str->c_string[str->size] = c;
-		str->size++;
+		str->c_string[str->size - 1u] = c;
 		return 1u;
 	}
 
+	str->size--;
 	temp_c_string = (char *)malloc(sizeof(char) * str->capacity * 2);
 	if (temp_c_string == NULL) {
 		fprintf(stderr,
@@ -213,7 +211,7 @@ int string_concat(String *str_left, String *str_right)
 
 		if (rslt == -1) {
 			fprintf(stderr,
-				"Error: string_concat. Error while appending char");
+				"Error: string_concat. Error while appending char\n");
 			return rslt;
 		}
 	}
