@@ -148,6 +148,11 @@ size_t lexer_next_token(Lexer *lex)
 		}
 	} else if (is_delimeter(c)) {
 		string_append_char(s, c);
+		char cc = lexer_peek_next_character(lex);
+		if (c == '>' && cc == '>') {
+			lexer_next_character(lex);
+			string_append_char(s, cc);
+		}
 		token_set_from_char_array_and_string(&(lex->peek_token),
 						     TOKEN_SYMBOL_TYPE, s);
 		lexer_next_character(lex);
@@ -215,4 +220,22 @@ void lexer_destroy(Lexer *l)
 	};
 	token_reset(&(l->current_token));
 	token_reset(&(l->peek_token));
+}
+
+char lexer_peek_next_character(Lexer *lex)
+{
+	if (lex == NULL) {
+		fprintf(stderr,
+			"ERROR: lexer_peek_next_character error. Received NULL instead of Lexer*\n");
+		return '\0';
+	};
+
+	if (lex->position + 1u > lex->input_size) {
+		fprintf(stderr,
+			"ERROR: lexer_peek_next_character error. Peek char out of range\n");
+
+		return '\0';
+	}
+
+	return lex->input_string[lex->position + 1u];
 }

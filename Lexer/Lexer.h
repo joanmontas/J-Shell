@@ -31,7 +31,7 @@ size_t lexer_next_token(Lexer *lex);
 void lexer_next_character(Lexer *lex);
 void lexer_eat_white_space(Lexer *lex);
 
-// char peekNextCharacter(Lexer *lex);
+char lexer_peek_next_character(Lexer *lex);
 // // extracting IDENT and or keywords
 // char *extractIDENT(Lexer *lex);
 // char *extractINT(Lexer *lex);
