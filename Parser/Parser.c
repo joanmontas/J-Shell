@@ -119,7 +119,7 @@ Ast *_parse(Parser *p)
 					ast = parse_binary(p, (Ast *)comm);
 					if (ast == NULL) {
 						fprintf(stderr,
-							"ERROR: _parse Error. Error while parsing binary Command\n");
+							"ERROR: _parse Error. Error while parsing binary Command. Unknown Symbol\n");
 						ast_destroy((Ast *)comm);
 						return NULL;
 					}
@@ -167,7 +167,7 @@ Ast *_parse(Parser *p)
 					ast = parse_binary(p, (Ast *)pth);
 					if (ast == NULL) {
 						fprintf(stderr,
-							"ERROR: _parse Error. Error while parsing binary Path\n");
+							"ERROR: _parse Error. Error while parsing binary Path. Unkown Symbol\n");
 						ast_destroy((Ast *)pth);
 						return NULL;
 					}

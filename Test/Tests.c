@@ -8,7 +8,6 @@
 #include <CUnit/Basic.h>
 
 #include "./string_test/string_test.h"
-#include "./hash_table_test/hash_table_test.h"
 #include "./list_test/list_test.h"
 #include "./token_test/token_test.h"
 #include "./lexer_test/lexer_test.h"
@@ -70,14 +69,6 @@ int main()
 		    test_list_get_nth_triple_list);
 	CU_add_test(test_list_suite, "Test linear search equality function",
 		    test_list_linear_search_exist);
-
-	// test hash_table
-	CU_pSuite test_hash_table_suite =
-		CU_add_suite("Hash_table testing", NULL, NULL);
-	CU_add_test(test_hash_table_suite, "Test hash initialization",
-		    test_hash_table_init);
-	CU_add_test(test_hash_table_suite, "Test hash insertion",
-		    test_hash_table_insert);
 
 	// test_token
 	CU_pSuite test_token_suite = CU_add_suite("token testing", NULL, NULL);

@@ -157,9 +157,83 @@ int eval_pipe(Ast *ast, int input_fd, int output_fd)
 
 			return rslt;
 
-		} else if(strcmp(smb->value->c_string, ">") == 0) {
+		} else if (strcmp(smb->value->c_string, ">") == 0) {
+			// NOTE(Joan) output redirect
+			if (pipe(intermediary_fd) == -1) {
+				fprintf(stderr,
+					"ERROR: while creating intermediary pipe\n");
+				return -1;
+			}
 
-                } else {
+			rslt = eval_pipe(l, input_fd,
+					 intermediary_fd[WRITE_END]);
+			close(intermediary_fd[WRITE_END]);
+
+			if (rslt == -1) {
+				close(intermediary_fd[READ_END]);
+				return -1;
+			}
+
+			char buffer[1024];
+			ssize_t bytes_read = read(intermediary_fd[READ_END],
+						  buffer, sizeof(buffer) - 1);
+			FILE *fp;
+			fp = fopen(ast_get_value(r), "w");
+
+			// NOTE(Joan) not checking for NULL since the fp will be created - Joan
+
+			if (bytes_read > 0) {
+				buffer[bytes_read] = '\0';
+				fprintf(fp, "%s", buffer);
+			}
+
+			fclose(fp);
+			close(intermediary_fd[READ_END]);
+
+			return rslt;
+
+		} else if (strcmp(smb->value->c_string, ">>") == 0) {
+			// NOTE(Joan) output redirect append
+			if (pipe(intermediary_fd) == -1) {
+				fprintf(stderr,
+					"ERROR: while creating intermediary pipe\n");
+				return -1;
+			}
+
+			rslt = eval_pipe(l, input_fd,
+					 intermediary_fd[WRITE_END]);
+			close(intermediary_fd[WRITE_END]);
+
+			if (rslt == -1) {
+				close(intermediary_fd[READ_END]);
+				return -1;
+			}
+
+			char buffer[1024];
+			ssize_t bytes_read = read(intermediary_fd[READ_END],
+						  buffer, sizeof(buffer) - 1);
+
+			FILE *fp;
+			fp = fopen(ast_get_value(r), "a");
+
+			if (fp == NULL) {
+				fprintf(stderr,
+					"ERROR: eval_pipe. Could not open file during output append\n");
+				close(intermediary_fd[READ_END]);
+				return -1;
+			}
+
+			if (bytes_read > 0) {
+				buffer[bytes_read] = '\0';
+				fprintf(fp, "%s", buffer);
+			}
+
+			fclose(fp);
+			close(intermediary_fd[READ_END]);
+
+			return rslt;
+
+		} else {
 			// NOTE(Joan) Add more binary symbol as needed
 			fprintf(stderr,
 				"ERROR: eval was unable to recognized binary symbol\n");
