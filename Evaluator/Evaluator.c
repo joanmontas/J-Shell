@@ -129,117 +129,7 @@ int eval_pipe(Ast *ast, int input_fd, int output_fd)
 		return 1;
 
 	} else if (ast_is_type(ast, AST_SYMBOL_TYPE)) {
-		Binary_ast *smb = (Binary_ast *)ast;
-		int intermediary_fd[2];
-
-		Ast *l = smb->left;
-		Ast *r = smb->right;
-
-		if (strcmp(smb->value->c_string, "|") == 0) {
-			if (pipe(intermediary_fd) == -1) {
-				fprintf(stderr,
-					"ERROR: while creating intermediary pipe\n");
-				return -1;
-			}
-
-			rslt = eval_pipe(l, input_fd,
-					 intermediary_fd[WRITE_END]);
-			close(intermediary_fd[WRITE_END]);
-
-			if (rslt == -1) {
-				close(intermediary_fd[READ_END]);
-				return -1;
-			}
-
-			rslt = eval_pipe(r, intermediary_fd[READ_END],
-					 output_fd);
-			close(intermediary_fd[READ_END]);
-
-			return rslt;
-
-		} else if (strcmp(smb->value->c_string, ">") == 0) {
-			// NOTE(Joan) output redirect
-			if (pipe(intermediary_fd) == -1) {
-				fprintf(stderr,
-					"ERROR: while creating intermediary pipe\n");
-				return -1;
-			}
-
-			rslt = eval_pipe(l, input_fd,
-					 intermediary_fd[WRITE_END]);
-			close(intermediary_fd[WRITE_END]);
-
-			if (rslt == -1) {
-				close(intermediary_fd[READ_END]);
-				return -1;
-			}
-
-			char buffer[1024];
-			ssize_t bytes_read = read(intermediary_fd[READ_END],
-						  buffer, sizeof(buffer) - 1);
-			FILE *fp;
-			fp = fopen(ast_get_value(r), "w");
-
-			// NOTE(Joan) not checking for NULL since the fp will be created - Joan
-
-			if (bytes_read > 0) {
-				buffer[bytes_read] = '\0';
-				fprintf(fp, "%s", buffer);
-			}
-
-			fclose(fp);
-			close(intermediary_fd[READ_END]);
-
-			return rslt;
-
-		} else if (strcmp(smb->value->c_string, ">>") == 0) {
-			// NOTE(Joan) output redirect append
-			if (pipe(intermediary_fd) == -1) {
-				fprintf(stderr,
-					"ERROR: while creating intermediary pipe\n");
-				return -1;
-			}
-
-			rslt = eval_pipe(l, input_fd,
-					 intermediary_fd[WRITE_END]);
-			close(intermediary_fd[WRITE_END]);
-
-			if (rslt == -1) {
-				close(intermediary_fd[READ_END]);
-				return -1;
-			}
-
-			char buffer[1024];
-			ssize_t bytes_read = read(intermediary_fd[READ_END],
-						  buffer, sizeof(buffer) - 1);
-
-			FILE *fp;
-			fp = fopen(ast_get_value(r), "a");
-
-			if (fp == NULL) {
-				fprintf(stderr,
-					"ERROR: eval_pipe. Could not open file during output append\n");
-				close(intermediary_fd[READ_END]);
-				return -1;
-			}
-
-			if (bytes_read > 0) {
-				buffer[bytes_read] = '\0';
-				fprintf(fp, "%s", buffer);
-			}
-
-			fclose(fp);
-			close(intermediary_fd[READ_END]);
-
-			return rslt;
-
-		} else {
-			// NOTE(Joan) Add more binary symbol as needed
-			fprintf(stderr,
-				"ERROR: eval was unable to recognized binary symbol\n");
-		}
-
-		return -1;
+		return eval_symbol_pipe(ast, input_fd, output_fd);
 
 	} else {
 		fprintf(stderr, "ERROR: eval. Error while executing command\n");
@@ -247,6 +137,116 @@ int eval_pipe(Ast *ast, int input_fd, int output_fd)
 	}
 
 	return -1;
+}
+
+int eval_symbol_pipe(Ast *ast, int input_fd, int output_fd)
+{
+	int rslt = 0;
+	Binary_ast *smb = (Binary_ast *)ast;
+	int intermediary_fd[2];
+
+	Ast *l = smb->left;
+	Ast *r = smb->right;
+
+	if (strcmp(smb->value->c_string, "|") == 0) {
+		if (pipe(intermediary_fd) == -1) {
+			fprintf(stderr,
+				"ERROR: while creating intermediary pipe\n");
+			return -1;
+		}
+
+		rslt = eval_pipe(l, input_fd, intermediary_fd[WRITE_END]);
+		close(intermediary_fd[WRITE_END]);
+
+		if (rslt == -1) {
+			close(intermediary_fd[READ_END]);
+			return -1;
+		}
+
+		rslt = eval_pipe(r, intermediary_fd[READ_END], output_fd);
+		close(intermediary_fd[READ_END]);
+
+		return rslt;
+
+	} else if (strcmp(smb->value->c_string, ">") == 0) {
+		// NOTE(Joan) output redirect
+		if (pipe(intermediary_fd) == -1) {
+			fprintf(stderr,
+				"ERROR: while creating intermediary pipe\n");
+			return -1;
+		}
+
+		rslt = eval_pipe(l, input_fd, intermediary_fd[WRITE_END]);
+		close(intermediary_fd[WRITE_END]);
+
+		if (rslt == -1) {
+			close(intermediary_fd[READ_END]);
+			return -1;
+		}
+
+		char buffer[1024];
+		ssize_t bytes_read = read(intermediary_fd[READ_END], buffer,
+					  sizeof(buffer) - 1);
+		FILE *fp;
+		fp = fopen(ast_get_value(r), "w");
+
+		// NOTE(Joan) not checking for NULL since the fp will be created - Joan
+
+		if (bytes_read > 0) {
+			buffer[bytes_read] = '\0';
+			fprintf(fp, "%s", buffer);
+		}
+
+		fclose(fp);
+		close(intermediary_fd[READ_END]);
+
+		return rslt;
+
+	} else if (strcmp(smb->value->c_string, ">>") == 0) {
+		// NOTE(Joan) output redirect append
+		if (pipe(intermediary_fd) == -1) {
+			fprintf(stderr,
+				"ERROR: while creating intermediary pipe\n");
+			return -1;
+		}
+
+		rslt = eval_pipe(l, input_fd, intermediary_fd[WRITE_END]);
+		close(intermediary_fd[WRITE_END]);
+
+		if (rslt == -1) {
+			close(intermediary_fd[READ_END]);
+			return -1;
+		}
+
+		char buffer[1024];
+		ssize_t bytes_read = read(intermediary_fd[READ_END], buffer,
+					  sizeof(buffer) - 1);
+
+		FILE *fp;
+		fp = fopen(ast_get_value(r), "a");
+
+		if (fp == NULL) {
+			fprintf(stderr,
+				"ERROR: eval_pipe. Could not open file during output append\n");
+			close(intermediary_fd[READ_END]);
+			return -1;
+		}
+
+		if (bytes_read > 0) {
+			buffer[bytes_read] = '\0';
+			fprintf(fp, "%s", buffer);
+		}
+
+		fclose(fp);
+		close(intermediary_fd[READ_END]);
+
+		return rslt;
+	} else {
+		// NOTE(Joan) Add more binary symbol as needed
+		fprintf(stderr,
+			"ERROR: eval was unable to recognized binary symbol\n");
+	}
+	return 0;
 }
 
 int exec_command_single(const char *cmd, char **arg)
