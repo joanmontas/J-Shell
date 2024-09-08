@@ -13,6 +13,7 @@
 #include "./lexer_test/lexer_test.h"
 #include "./ast_test/ast_test.h"
 #include "./parser_test/parser_test.h"
+#include "./hash_table_test/hash_table_test.h"
 #include "./evaluator_test/evaluator_test.h"
 
 int main()
@@ -40,6 +41,18 @@ int main()
 		    test_string_pop_back);
 	CU_add_test(test_string_suite, "Test string append char",
 		    test_string_append_char);
+
+                // test Hash_table
+        CU_pSuite test_hash_table_suite =
+		CU_add_suite("Hash_table testing", NULL, NULL);
+        CU_add_test(test_hash_table_suite, "Test hash_table initialization",
+		    test_hash_table_init);
+        CU_add_test(test_hash_table_suite, "Test hash_table insertion",
+		    test_hash_table_insert);
+        CU_add_test(test_hash_table_suite, "Test hash_table searching",
+		    test_hash_table_search);
+        CU_add_test(test_hash_table_suite, "Test hash_table deletion",
+		    test_hash_table_delete);
 
 	// test list
 	CU_pSuite test_list_suite = CU_add_suite("List testing", NULL, NULL);
