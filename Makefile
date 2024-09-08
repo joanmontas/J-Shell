@@ -10,7 +10,7 @@ TEST_FRAMEWORK = -lcunit
 
 all: $(EXECUTABLE_NAME) tests
 
-$(EXECUTABLE_NAME): main.o Token.o String.o List.o Lexer.o Parser.o Ast.o Evaluator.o
+$(EXECUTABLE_NAME): main.o Token.o String.o List.o Lexer.o Parser.o Ast.o Hash_table.o Evaluator.o
 	$(CC) $(CFLAGS) -o $(EXECUTABLE_NAME) main.o Token.o String.o List.o Lexer.o Parser.o Ast.o Evaluator.o
 
 main.o: main.c
@@ -37,8 +37,11 @@ List.o: ./List/List.c ./List/List.h
 Token.o: ./Token/Token.c ./Token/Token.h
 	$(CC) $(CFLAGS) -c ./Token/Token.c
 
-tests: Tests.o String.o List.o Lexer.o Parser.o Ast.o Evaluator.o string_test.o list_test.o token_test.o lexer_test.o parser_test.o ast_test.o evaluator_test.o
-	$(CC) $(CFLAGS) -o tests Tests.o String.o List.o Lexer.o Parser.o Token.o Ast.o Evaluator.o string_test.o list_test.o token_test.o lexer_test.o parser_test.o ast_test.o evaluator_test.o $(TEST_FRAMEWORK)
+Hash_table.o: ./Hash_table/Hash_table.c ./Hash_table/Hash_table.h
+	$(CC) $(CFLAGS) -c ./Hash_table/Hash_table.c
+
+tests: Tests.o String.o List.o Lexer.o Parser.o Ast.o Hash_table.o Evaluator.o string_test.o list_test.o token_test.o lexer_test.o parser_test.o ast_test.o hash_table_test.o evaluator_test.o
+	$(CC) $(CFLAGS) -o tests Tests.o String.o List.o Lexer.o Parser.o Token.o Ast.o Hash_table.o Evaluator.o string_test.o list_test.o token_test.o lexer_test.o parser_test.o ast_test.o hash_table_test.o evaluator_test.o $(TEST_FRAMEWORK)
 
 Tests.o: ./Test/Tests.c
 	$(CC) $(CFLAGS) -c ./Test/Tests.c
@@ -63,6 +66,9 @@ ast_test.o: ./Test/ast_test/ast_test.c ./Test/ast_test/ast_test.h
 
 evaluator_test.o: ./Test/evaluator_test/evaluator_test.c ./Test/evaluator_test/evaluator_test.h
 	$(CC) $(CFLAGS) -c ./Test/evaluator_test/evaluator_test.c
+
+hash_table_test.o: ./Test/hash_table_test/hash_table_test.c ./Test/hash_table_test/hash_table_test.h
+	$(CC) $(CFLAGS) -c ./Test/hash_table_test/hash_table_test.c
 
 clean:
 	rm ./*.o ./$(EXECUTABLE_NAME) ./tests
