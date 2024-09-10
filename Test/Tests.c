@@ -42,16 +42,16 @@ int main()
 	CU_add_test(test_string_suite, "Test string append char",
 		    test_string_append_char);
 
-                // test Hash_table
-        CU_pSuite test_hash_table_suite =
+	// test Hash_table
+	CU_pSuite test_hash_table_suite =
 		CU_add_suite("Hash_table testing", NULL, NULL);
-        CU_add_test(test_hash_table_suite, "Test hash_table initialization",
+	CU_add_test(test_hash_table_suite, "Test hash_table initialization",
 		    test_hash_table_init);
-        CU_add_test(test_hash_table_suite, "Test hash_table insertion",
+	CU_add_test(test_hash_table_suite, "Test hash_table insertion",
 		    test_hash_table_insert);
-        CU_add_test(test_hash_table_suite, "Test hash_table searching",
+	CU_add_test(test_hash_table_suite, "Test hash_table searching",
 		    test_hash_table_search);
-        CU_add_test(test_hash_table_suite, "Test hash_table deletion",
+	CU_add_test(test_hash_table_suite, "Test hash_table deletion",
 		    test_hash_table_delete);
 
 	// test list
