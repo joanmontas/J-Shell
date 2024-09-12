@@ -8,6 +8,7 @@
 #include "./Lexer/Lexer.h"
 #include "./Ast/Ast.h"
 #include "./Parser/Parser.h"
+#include "./utils/Return_Codes/Return_codes.h"
 #include "Evaluator/Evaluator.h"
 
 // void handle_signal(int sig)
@@ -65,10 +66,6 @@ int main()
 		if (char_read > 0 && buffer[char_read - 1] == '\n') {
 			buffer[char_read - 1] = '\0';
 		}
-
-		// if (buffer[char_read - 1] == '\n') {
-		// 	buffer[char_read - 1] = '\0';
-		// }
 
 		// build in
 		if ((strcmp(buffer, "exit") == 0)) {
