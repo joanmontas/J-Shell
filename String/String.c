@@ -198,7 +198,7 @@ char *string_get_c_string(String *str)
 int string_concat(String *str_left, String *str_right)
 {
 	size_t i = 0u;
-	int rslt = 0;
+	size_t rslt = 0;
 
 	if (str_left == NULL || str_right == NULL) {
 		fprintf(stderr,
@@ -209,10 +209,10 @@ int string_concat(String *str_left, String *str_right)
 	for (i = 0u; i < str_right->size; i++) {
 		rslt = string_append_char(str_left, string_at(str_right, i));
 
-		if (rslt == -1) {
+		if (rslt == 0) {
 			fprintf(stderr,
 				"Error: string_concat. Error while appending char\n");
-			return rslt;
+			return -1;
 		}
 	}
 
