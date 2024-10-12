@@ -40,7 +40,7 @@ int Evaluate(Program_Ast *p)
 
 			cmd_args_destroy(caf);
 
-			if (rslt != 1) {
+			if (rslt < 0) {
 				return rslt;
 			}
 
@@ -103,7 +103,7 @@ int eval_pipe(Ast *ast, int input_fd, int output_fd)
 
 		cmd_args_destroy(caf);
 
-		if (rslt != 1) {
+		if (rslt < 0) {
 			return rslt;
 		}
 
@@ -122,7 +122,7 @@ int eval_pipe(Ast *ast, int input_fd, int output_fd)
 
 		cmd_args_destroy(caf);
 
-		if (rslt != 1) {
+		if (rslt < 0) {
 			return rslt;
 		}
 
