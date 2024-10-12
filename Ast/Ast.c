@@ -33,7 +33,7 @@ Ast *Ast_init_factory(const char *type, char *val)
 		return NULL;
 	}
 
-	if (strcmp(type, AST_COMMAND_TYPE)) {
+	if (strcmp(type, AST_COMMAND_TYPE) == 0) {
 		ptr = (Ast *)malloc(sizeof(Command_Ast));
 		((Command_Ast *)ptr)->value = string_init_c_string(val);
 		if (((Command_Ast *)ptr)->value == NULL) {
@@ -44,7 +44,7 @@ Ast *Ast_init_factory(const char *type, char *val)
 		}
 		((Command_Ast *)ptr)->args = List_init();
 
-	} else if (strcmp(type, AST_SYMBOL_TYPE)) {
+	} else if (strcmp(type, AST_SYMBOL_TYPE) == 0) {
 		ptr = (Ast *)malloc(sizeof(Binary_ast));
 		((Binary_ast *)ptr)->value = string_init_c_string(val);
 		if (((Binary_ast *)ptr)->value == NULL) {
@@ -56,7 +56,7 @@ Ast *Ast_init_factory(const char *type, char *val)
 		((Binary_ast *)ptr)->left = NULL;
 		((Binary_ast *)ptr)->right = NULL;
 
-	} else if (strcmp(type, AST_IDENT_TYPE)) {
+	} else if (strcmp(type, AST_IDENT_TYPE) == 0) {
 		ptr = (Ast *)malloc(sizeof(Ident_Ast));
 		((Ident_Ast *)ptr)->value = string_init_c_string(val);
 		if (((Ident_Ast *)ptr)->value == NULL) {
@@ -66,7 +66,7 @@ Ast *Ast_init_factory(const char *type, char *val)
 			return NULL;
 		}
 
-	} else if (strcmp(type, AST_QUOTED_TYPE)) {
+	} else if (strcmp(type, AST_QUOTED_TYPE) == 0) {
 		ptr = (Ast *)malloc(sizeof(Quoted_Ast));
 		((Quoted_Ast *)ptr)->value = string_init_c_string(val);
 		if (((Quoted_Ast *)ptr)->value == NULL) {
@@ -76,7 +76,7 @@ Ast *Ast_init_factory(const char *type, char *val)
 			return NULL;
 		}
 
-	} else if (strcmp(type, AST_PATH_TYPE)) {
+	} else if (strcmp(type, AST_PATH_TYPE) == 0) {
 		ptr = (Ast *)malloc(sizeof(Path_Ast));
 		((Path_Ast *)ptr)->value = string_init_c_string(val);
 		if (((Path_Ast *)ptr)->value == NULL) {
